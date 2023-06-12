@@ -7,7 +7,8 @@ public class Rotate : MonoBehaviour
    
    
     void Update()
-    {
+    {   
+        if (ConfigController.instance.isPause) return;
        // Obtém a posição do mouse na tela
         Vector3 mousePosition = Input.mousePosition;
 

@@ -6,28 +6,95 @@ using UnityEngine.SceneManagement;
 
 public class Life : MonoBehaviour
 {
-    public int life = 300;
-    public Text vidas;
+    [SerializeField] private float vidaMaxima = 150;
+    [SerializeField] private GameObject explosao;
+    //[SerializeField] private Text vidas;
 
-    void OnCollisionEnter(Collision Bullet)
-    {
-        if (Bullet.gameObject.CompareTag("Vida"))
-        {
-            if (life < 300)
-            {
-                life += 10;
-                Destroy(Bullet.gameObject);
-                vidas.text = "Vidas: " + life;
-            }
+    private float vidaAtual;
+
+    private void Awake() {
+        vidaAtual = vidaMaxima;
+    }
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.T)) {
+            vidaAtual = Mathf.Clamp(vidaAtual + 10f, 0, vidaMaxima);
         }
-        else
+        if (Input.GetKeyDown(KeyCode.G)) {
+            vidaAtual = Mathf.Clamp(vidaAtual - 10f, 0, vidaMaxima);
+        }
+    }
+
+    void OnTriggerEnter(Collider other) 
+    {
+        if (other.gameObject.CompareTag("Vida"))
         {
-            life--;
-            vidas.text = "Vidas: " + life;
-            if (life < 1)
+            vidaAtual = Mathf.Clamp(vidaAtual = vidaMaxima, 0, vidaMaxima);
+            Destroy(other.gameObject);
+           // vidas.text = "Vidas: " + vidaAtual;
+        }
+        if (other.gameObject.CompareTag("ShootEnemy"))
+        {   
+            Destroy(other.gameObject);
+            vidaAtual = Mathf.Clamp(vidaAtual - 10f, 0, vidaMaxima);
+           // vidas.text = "Vidas: " + vidaAtual;
+            PlayAudio();
+            if (vidaAtual == 0)
+            {
+                SceneManager.LoadScene("GameOver");
+            }
+
+            if (other.gameObject.CompareTag("Barril"))
+        {   
+            Destroy(other.gameObject);
+            vidaAtual = Mathf.Clamp(vidaAtual - 20f, 0, vidaMaxima);
+           // vidas.text = "Vidas: " + vidaAtual;
+            PlayAudio();
+            if (vidaAtual == 0)
             {
                 SceneManager.LoadScene("GameOver");
             }
         }
+        if (other.gameObject.CompareTag("Granada"))
+        {   
+            Destroy(other.gameObject);
+            vidaAtual = Mathf.Clamp(vidaAtual - 10f, 0, vidaMaxima);
+            Instantiate(explosao, transform.position, Quaternion.identity);
+            PlayAudio();
+            if (vidaAtual == 0)
+            {
+                SceneManager.LoadScene("GameOver");
+            }
+        }
+    }}
+
+    //PROVISORIO 
+
+    public AudioSource audioSource;
+
+    public void PlayAudio()
+    {
+        if (audioSource != null)
+        {
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+
+                Invoke("StopAudio" , 3.0f);
+            }
+        }
     }
+
+    public void StopAudio()
+    {
+        if (audioSource != null)
+        {
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
+        }
+    }
+
+    public float TaxaDeVida => vidaAtual / vidaMaxima;
 }

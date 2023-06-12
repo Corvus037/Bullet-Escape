@@ -4,27 +4,16 @@ using UnityEngine;
 
 public class gunshoot : MonoBehaviour
 {
+    [SerializeField] private float speed;
+    [SerializeField] private float destroyTime = 5.0f;
 
-    void Start(){
-        Destroy(this.gameObject, 4.0f);
-
+    private void Start()
+    {
+        Destroy(gameObject, destroyTime);
     }
-   public float speed;
+
     void Update()
     {
-        transform.Translate(speed * Time.deltaTime , 0 , 0);
+        transform.Translate(transform.right * speed * Time.deltaTime);
     }
-
-     private void OnTriggerEnter(Collider other)
-    {
-        // Verifica se o objeto que colidiu possui o componente "Destroyable"
-        if (other.CompareTag("Player"))
-        {
-            // Destroi o objeto que colidiu
-           
-        }
-         
-    }
-   
-    }
-
+}
